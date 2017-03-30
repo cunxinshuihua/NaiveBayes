@@ -40,8 +40,11 @@ public class QuickNaiveBayes {
 		try {
 			fr = new FileReader(fileName);
 			br = new BufferedReader(fr);
+			double sampleRate = 1;
 			while ((line = br.readLine()) != null) {
-				quickParseInfo(line);
+				double random = Math.random();
+				if (random <= sampleRate) 
+					quickParseInfo(line);
 			}
 		}
 		catch (FileNotFoundException e) {
@@ -60,9 +63,9 @@ public class QuickNaiveBayes {
 			}
 		}
 		
-		for (int i = 0; i < 15; ++i) {
+		/*for (int i = 0; i < 15; ++i) {
 			System.out.println(accNum.get(i).size());
-		}
+		}*/
 	}
 	
 	public static void quickPosCal() {
@@ -77,7 +80,9 @@ public class QuickNaiveBayes {
 				if (key.contains("::")) {
 					String pos = key.split("::")[1];
 					Double n_xi_y = accNum.get(idx).get(key).doubleValue() + bias;
+					// Double n_xi_y = accNum.get(idx).get(key).doubleValue();
 					Double n_y = accNum.get(14).get(pos).doubleValue() + cateNum[idx] * bias;
+					// Double n_y = accNum.get(idx).get(key).doubleValue();
 					entry.setValue(n_xi_y / n_y);
 				}
 			}	
@@ -100,6 +105,7 @@ public class QuickNaiveBayes {
 			br = new BufferedReader(fr);
 			
 			// System.out.println(posCal.get(GT));
+			int cc = 0;
 			while ((line = br.readLine()) != null) {
 				String[] info = line.split(",");
 				
@@ -109,6 +115,7 @@ public class QuickNaiveBayes {
 				}
 				
 				Double ygt = Math.log(posCal.get(14).get(GT)); Double yle = Math.log(posCal.get(14).get(LE));
+				boolean flag = false;
 				for (int idx = 0; idx < 14; ++idx) {
 					String text = info[idx];
 					// if (text.equals("?")) continue;
@@ -123,6 +130,7 @@ public class QuickNaiveBayes {
 					else {
 						// System.out.println("Empty entry : " + text);
 						ygt += Math.log(1.0 / cateNum[idx]);
+						flag = true;
 					}
 					if (posCal.get(idx).containsKey(text + "::" + LE)) {
 						yle += Math.log(posCal.get(idx).get(text + "::" + LE));
@@ -130,6 +138,7 @@ public class QuickNaiveBayes {
 					else {
 						// System.out.println("Empty entry : " + text);
 						yle += Math.log(1.0 / cateNum[idx]);
+						flag = true;
 					}
 				}
 				
@@ -142,7 +151,9 @@ public class QuickNaiveBayes {
 					correct ++;
 				}
 				total ++; 
+				if (flag) cc ++;
 			}
+			System.out.println("Empty Entry : " + cc);
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
